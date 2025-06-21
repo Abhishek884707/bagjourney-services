@@ -1,12 +1,19 @@
 package com.abhishek.bagjourney_services.entity;
 
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BagItinerary {
 
-    String id;
+    String bagTagId;
     String date;
-    String departedFrom;
-    String pnr;
-    String surName;
+    String departedStation;
+    String pnrNumber;
+    String lastName;
     String masterBagId;
 
 }
