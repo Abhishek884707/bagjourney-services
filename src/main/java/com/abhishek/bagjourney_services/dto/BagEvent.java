@@ -1,8 +1,10 @@
 package com.abhishek.bagjourney_services.dto;
 
+import com.abhishek.bagjourney_services.model.EventCodes;
 import com.abhishek.bagjourney_services.model.FlightLeg;
 import com.abhishek.bagjourney_services.model.Passenger;
 import com.abhishek.bagjourney_services.model.WeightDetails;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -14,18 +16,20 @@ import java.util.List;
 @Getter
 @Setter
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BagEvent {
 
     String messageType;
     String airportCode;
     String baggageSourceIndicator;
     String bagTag;
-    String locator;
+    String pnr;
     FlightLeg outbound;
     FlightLeg inbound;
     List<FlightLeg> onwards;
     Passenger passenger;
-    Reconcilation reconcilation;
+    Reconciliation reconcilation;
     WeightDetails bagWeightDetail;
     String loyaltyNum;
+    EventCodes eventCode;
 }
