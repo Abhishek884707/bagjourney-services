@@ -16,7 +16,6 @@ public class EventDetails {
     String eventCode;
     String eventDescription;
     String bagTagNumber;
-    String loadSequenceNumber;
     FlightLeg outbound;
     FlightLeg inbound;
     List<FlightLeg> onwards;

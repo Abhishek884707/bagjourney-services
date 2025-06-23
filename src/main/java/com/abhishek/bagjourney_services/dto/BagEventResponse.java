@@ -7,11 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InboundFlight {
+public class BagEventResponse {
 
-    String sourceAirport;
-    String flightNumber;
-    String date;
-    String airline;
+    Boolean status;
+    String message;
 
 }

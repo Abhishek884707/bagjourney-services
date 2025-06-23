@@ -1,28 +1,33 @@
 package com.abhishek.bagjourney_services.servicesImpl;
 
-import com.abhishek.bagjourney_services.dto.BagEvent;
+import com.abhishek.bagjourney_services.dto.BagEventRequest;
 import com.abhishek.bagjourney_services.entity.BagItinerary;
 import com.abhishek.bagjourney_services.entity.BagTagEvents;
 import com.abhishek.bagjourney_services.model.*;
+import com.abhishek.bagjourney_services.repository.BagTagEventsRepository;
+import com.abhishek.bagjourney_services.repository.ItineraryRepository;
 import com.abhishek.bagjourney_services.services.BagEventProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class BagEventProcessorImpl implements BagEventProcessor {
 
+    @Autowired
+    ItineraryRepository itineraryRepository;
+
     @Override
-    public BagTagEvents process(BagEvent bagEvent) {
+    public Boolean process(BagEventRequest bagEvent) {
         EventDetails eventDetails = new EventDetails();
         // fetch call to DB get the details of Itinerary
-        BagItinerary bagItinerary = null;
+        BagItinerary bagItinerary = itineraryRepository.getItinerary(bagEvent.getBagTag(), bagEvent.getAirportCode());
         if (bagItinerary == null){
             List<BagItinerary> bagItineraries = createBagItinerary(bagEvent);
             // fetch call to DB get the details of Itinerary after creating
-            bagItinerary = new BagItinerary();
+            bagItinerary = itineraryRepository.getItinerary(bagEvent.getBagTag(), bagEvent.getAirportCode());
         }
 
         // create Event Details
@@ -33,30 +38,55 @@ public class BagEventProcessorImpl implements BagEventProcessor {
         return storeBagTagEvent(eventDetails, bagItinerary.getMasterBagId());
     }
 
-    private BagTagEvents storeBagTagEvent(EventDetails eventDetails, String masterBagId) {
-        BagTagEvents bagTagEvents = new BagTagEvents();
-        bagTagEvents.setMasterBagId(masterBagId);
-        bagTagEvents.setEventDetails(eventDetails);
-        return bagTagEvents;
+
+    private Boolean storeBagTagEvent(EventDetails eventDetails, String masterBagId) {
+        SimpleDateFormat DDMMM = new SimpleDateFormat("ddMMM");
+        Date date = new Date();
+        String currentDate = DDMMM.format(date);
+        BagTagEvents bagTagEvent = new BagTagEvents();
+        bagTagEvent.setMasterBagId(masterBagId);
+        bagTagEvent.setEventDetails(eventDetails);
+        eventDetails.setEventDateTimeLocal(currentDate);
+        bagTagEvent.setEventDate(currentDate);
+        List<BagTagEvents> bagTagEventsList = BagTagEventsRepository.bagTagEventsList.get(masterBagId);
+        if(bagTagEventsList != null && !bagTagEventsList.isEmpty()){
+            List<BagTagEvents> bagTagEvents = new ArrayList<>();
+            bagTagEvents.addAll(bagTagEventsList);
+            bagTagEvents.add(bagTagEvent);
+            BagTagEventsRepository.bagTagEventsList.put(masterBagId, bagTagEvents);
+        }else{
+            BagTagEventsRepository.bagTagEventsList.put(masterBagId, Arrays.asList(bagTagEvent));
+        }
+        return true;
     }
 
-    public List<BagItinerary> createBagItinerary(BagEvent bagEvent) {
+    public List<BagItinerary> createBagItinerary(BagEventRequest bagEvent) {
         List<BagItinerary> bagItineraries = new ArrayList<>();
             String masterBagTagId = UUID.randomUUID().toString();
             BagItinerary itinerary = null;
-            if(bagEvent.getOutbound() != null){
+            if(bagEvent.getAirportCode() != null){
+            }
+            if(bagEvent.getOutbound() != null && bagEvent.getOutbound().getAirportCode() != null){
                 itinerary = createItinerary(bagEvent.getOutbound(), bagEvent.getBagTag(),
                         bagEvent.getPassenger(), bagEvent.getPnr(), masterBagTagId);
                 if (itinerary != null){
                     bagItineraries.add(itinerary);
                 }
-            }else if(bagEvent.getInbound() != null){
+                //create itinerary with the source station details
+                FlightLeg flight = bagEvent.getOutbound();
+                flight.setAirportCode(bagEvent.getAirportCode());
+                itinerary = createItinerary(bagEvent.getOutbound(), bagEvent.getBagTag(),
+                        bagEvent.getPassenger(), bagEvent.getPnr(), masterBagTagId);
+                if (itinerary != null){
+                    bagItineraries.add(itinerary);
+                }
+            }if(bagEvent.getInbound() != null && bagEvent.getInbound().getAirportCode() != null){
                 itinerary = createItinerary(bagEvent.getInbound(), bagEvent.getBagTag(),
                         bagEvent.getPassenger(), bagEvent.getPnr(), masterBagTagId);
                 if (itinerary != null){
                     bagItineraries.add(itinerary);
                 }
-            } else if (!bagEvent.getOnwards().isEmpty()) {
+            } if (!bagEvent.getOnwards().isEmpty()) {
                 for(FlightLeg flight : bagEvent.getOnwards()){
                     itinerary = createItinerary(flight, bagEvent.getBagTag(),
                             bagEvent.getPassenger(), bagEvent.getPnr(), masterBagTagId);
@@ -65,6 +95,10 @@ public class BagEventProcessorImpl implements BagEventProcessor {
                     }
                 }
             }
+
+         if(!bagItineraries.isEmpty()){
+             ItineraryRepository.bagItineraries.addAll(bagItineraries);
+         }
 
         return bagItineraries;
     }
@@ -83,9 +117,8 @@ public class BagEventProcessorImpl implements BagEventProcessor {
         return bagItinerary;
     }
 
-    private EventDetails createEventDetails(BagEvent bagEvent, BagItinerary bagItinerary){
+    private EventDetails createEventDetails(BagEventRequest bagEvent, BagItinerary bagItinerary){
         EventDetails eventDetails = new EventDetails();
-
         eventDetails.setAirport(bagEvent.getAirportCode());
         eventDetails.setBagTagNumber(bagEvent.getBagTag());
         eventDetails.setFrequentFlyerId(bagEvent.getLoyaltyNum());
@@ -94,21 +127,25 @@ public class BagEventProcessorImpl implements BagEventProcessor {
         eventDetails.setOnwards(bagEvent.getOnwards());
         eventDetails.setMessageType(bagEvent.getMessageType());
         eventDetails.setBaggageSourceIndicator(bagEvent.getBaggageSourceIndicator());
-        eventDetails.setPassenger(eventDetails.getPassenger());
+        eventDetails.setPassenger(bagEvent.getPassenger());
         eventDetails.setPnr(bagEvent.getPnr());
         eventDetails.setWeight(bagEvent.getBagWeightDetail());
-        eventDetails.setPaxStatus(bagEvent.getReconcilation().getPassengerStatus());
-        eventDetails.setBagTagStatus(bagEvent.getReconcilation().getBagStatus());
-        eventDetails.setSeatNumber(bagEvent.getReconcilation().getSeatNumber());
+        eventDetails.setPaxStatus(bagEvent.getReconciliation().getPassengerStatus());
+        eventDetails.setBagTagStatus(bagEvent.getReconciliation().getBagStatus());
+        eventDetails.setSeatNumber(bagEvent.getReconciliation().getSeatNumber());
 
         return eventDetails;
     }
 
-    private EventDetails setEventDetails(EventDetails eventDetails, BagEvent bagEvent){
+    private EventDetails setEventDetails(EventDetails eventDetails, BagEventRequest bagEvent){
 
         if(bagEvent.getEventCode() == EventCodes.C) {
-            eventDetails.setEventCode(Constats.BAG_CHECKED_IN);
-            eventDetails.setEventDescription("Bag Checked In at : " + bagEvent.getAirportCode());
+            if(Constats.T_SOURCE_INDICATOR.equalsIgnoreCase(bagEvent.getBaggageSourceIndicator()))
+                eventDetails.setEventCode(Constats.BAG_EXPECTED);
+            else
+                eventDetails.setEventCode(Constats.BAG_CHECKED_IN);
+
+            eventDetails.setEventDescription("Bag Checked In");
         }else if(bagEvent.getEventCode() == EventCodes.DB){
             eventDetails.setEventCode(Constats.BAG_DAMAGED);
             eventDetails.setEventDescription("Damaged Bag Reported");

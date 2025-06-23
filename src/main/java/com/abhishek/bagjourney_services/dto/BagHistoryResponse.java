@@ -2,20 +2,22 @@ package com.abhishek.bagjourney_services.dto;
 
 import com.abhishek.bagjourney_services.model.Passenger;
 import com.abhishek.bagjourney_services.model.WeightDetails;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class BagHistoryResponse {
     Boolean success;
     String bagTagNum;
-    Passenger passenger;
+    String passengerName;
     WeightDetails weightDetails;
     Reconciliation reconciliation;
-    List<BagTagEvent> bagTagEvents;
+    List<Event> bagTagEvents;
 }
