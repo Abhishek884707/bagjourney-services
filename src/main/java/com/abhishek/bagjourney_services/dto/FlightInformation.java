@@ -15,9 +15,9 @@ import java.util.List;
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class FlightInformation {
 
-    Flight flight;
+    Flight outbound;
 
-    InboundFlight inboundFlight;
+    InboundFlight inbound;
 
     List<Flight> onward;
 

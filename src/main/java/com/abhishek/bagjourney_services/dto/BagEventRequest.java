@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BagEvent {
+public class BagEventRequest {
 
     String messageType;
     String airportCode;
@@ -28,7 +28,7 @@ public class BagEvent {
     FlightLeg inbound;
     List<FlightLeg> onwards;
     Passenger passenger;
-    Reconciliation reconcilation;
+    Reconciliation reconciliation;
     WeightDetails bagWeightDetail;
     String loyaltyNum;
     EventCodes eventCode;

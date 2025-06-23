@@ -1,10 +1,9 @@
 package com.abhishek.bagjourney_services.services;
 
-import com.abhishek.bagjourney_services.dto.BagEvent;
-import com.abhishek.bagjourney_services.entity.BagTagEvents;
+import com.abhishek.bagjourney_services.dto.BagEventRequest;
 
 public interface BagEventProcessor {
 
-    public BagTagEvents process(BagEvent bagEvent);
+    public Boolean process(BagEventRequest bagEvent);
 
 }
