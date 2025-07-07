@@ -21,14 +21,31 @@ public class BagHistoryImpl implements BagHistory {
 
     @Override
     public List<BagTagEvents> getListOfEvents(String bagTagNumber, String date, String lastName, String pnr) {
+        List<BagItinerary> bagItineraries = null;
+        if(bagTagNumber != null
+                && !bagTagNumber.isBlank()
+                && date != null
+                && !date.isBlank()){
+            bagItineraries = this.itineraryRepository.findByBagTagAndDate(bagTagNumber, date);
+        }
 
-        BagItinerary bagItinerary = this.itineraryRepository.getItineraryWithPnr(bagTagNumber, pnr);
+        if(!bagItineraries.isEmpty() && lastName != null && !lastName.isEmpty()){
+            bagItineraries = this.itineraryRepository.findByBagTagAndDateAndLastname(bagTagNumber, date, lastName);
+        }
 
-        if(bagItinerary != null){
-            return this.bagTagEventsRepository.getBagTagEvents(bagItinerary.getMasterBagId());
+        if(!bagItineraries.isEmpty() &&
+                lastName != null &&
+                !lastName.isEmpty() &&
+                pnr != null &&
+                !pnr.isBlank()){
+            bagItineraries = this.itineraryRepository.findByBagTagAndDateAndLastnameAndPnr(bagTagNumber
+            ,date, lastName, pnr);
+        }
+
+        for(BagItinerary bagItinerary : bagItineraries){
+            return this.bagTagEventsRepository.findByMasterBagIdOrderByEventDateAsc(bagItinerary.getMasterBagId());
         }
 
         return null;
     }
-
 }

@@ -1,5 +1,6 @@
 package com.abhishek.bagjourney_services.dto;
 
+import com.abhishek.bagjourney_services.model.ErrorCodes;
 import lombok.*;
 
 @Getter

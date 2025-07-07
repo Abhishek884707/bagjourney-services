@@ -10,7 +10,8 @@ import com.abhishek.bagjourney_services.services.BagEventProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -19,15 +20,18 @@ public class BagEventProcessorImpl implements BagEventProcessor {
     @Autowired
     ItineraryRepository itineraryRepository;
 
+    @Autowired
+    BagTagEventsRepository bagTagEventsRepository;
+
     @Override
     public Boolean process(BagEventRequest bagEvent) {
         EventDetails eventDetails = new EventDetails();
         // fetch call to DB get the details of Itinerary
-        BagItinerary bagItinerary = itineraryRepository.getItinerary(bagEvent.getBagTag(), bagEvent.getAirportCode());
+        BagItinerary bagItinerary = itineraryRepository.findByBagTagIdAndDepartedStation(bagEvent.getBagTag(), bagEvent.getAirportCode());
         if (bagItinerary == null){
             List<BagItinerary> bagItineraries = createBagItinerary(bagEvent);
             // fetch call to DB get the details of Itinerary after creating
-            bagItinerary = itineraryRepository.getItinerary(bagEvent.getBagTag(), bagEvent.getAirportCode());
+            bagItinerary = itineraryRepository.findByBagTagIdAndDepartedStation(bagEvent.getBagTag(), bagEvent.getAirportCode());
         }
 
         // create Event Details
@@ -40,23 +44,16 @@ public class BagEventProcessorImpl implements BagEventProcessor {
 
 
     private Boolean storeBagTagEvent(EventDetails eventDetails, String masterBagId) {
-        SimpleDateFormat DDMMM = new SimpleDateFormat("ddMMM");
-        Date date = new Date();
-        String currentDate = DDMMM.format(date);
+        DateTimeFormatter formatter
+                = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String currentDate = localDateTime.format(formatter);
         BagTagEvents bagTagEvent = new BagTagEvents();
         bagTagEvent.setMasterBagId(masterBagId);
         bagTagEvent.setEventDetails(eventDetails);
         eventDetails.setEventDateTimeLocal(currentDate);
         bagTagEvent.setEventDate(currentDate);
-        List<BagTagEvents> bagTagEventsList = BagTagEventsRepository.bagTagEventsList.get(masterBagId);
-        if(bagTagEventsList != null && !bagTagEventsList.isEmpty()){
-            List<BagTagEvents> bagTagEvents = new ArrayList<>();
-            bagTagEvents.addAll(bagTagEventsList);
-            bagTagEvents.add(bagTagEvent);
-            BagTagEventsRepository.bagTagEventsList.put(masterBagId, bagTagEvents);
-        }else{
-            BagTagEventsRepository.bagTagEventsList.put(masterBagId, Arrays.asList(bagTagEvent));
-        }
+        bagTagEventsRepository.save(bagTagEvent);
         return true;
     }
 
@@ -97,7 +94,7 @@ public class BagEventProcessorImpl implements BagEventProcessor {
             }
 
          if(!bagItineraries.isEmpty()){
-             ItineraryRepository.bagItineraries.addAll(bagItineraries);
+             itineraryRepository.saveAll(bagItineraries);
          }
 
         return bagItineraries;
@@ -107,12 +104,13 @@ public class BagEventProcessorImpl implements BagEventProcessor {
                                          String pnr, String masterBagTagId){
         BagItinerary bagItinerary = null;
         if(flight.getAirportCode() != null){
-            bagItinerary = BagItinerary.builder().masterBagId(masterBagTagId.toString()).
-                    bagTagId(bagTag).
-            departedStation(flight.getAirportCode()).
-            pnrNumber(pnr).
-            lastName(passenger.getLastName()).
-            date(flight.getDate()).build();
+            bagItinerary = new BagItinerary();
+            bagItinerary.setDate(flight.getDate());
+            bagItinerary.setBagTagId(bagTag);
+            bagItinerary.setMasterBagId(masterBagTagId.toString());
+            bagItinerary.setLastName(passenger.getLastName());
+            bagItinerary.setPnrNumber(pnr);
+            bagItinerary.setDepartedStation(flight.getAirportCode());
         }
         return bagItinerary;
     }

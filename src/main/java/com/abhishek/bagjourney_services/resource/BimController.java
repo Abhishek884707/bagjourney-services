@@ -4,10 +4,12 @@ import com.abhishek.bagjourney_services.dto.BagEventRequest;
 import com.abhishek.bagjourney_services.dto.BagEventResponse;
 import com.abhishek.bagjourney_services.dto.BagHistoryResponse;
 import com.abhishek.bagjourney_services.dto.ErrorResponse;
+import com.abhishek.bagjourney_services.entity.BagItinerary;
 import com.abhishek.bagjourney_services.entity.BagTagEvents;
 import com.abhishek.bagjourney_services.services.BagEventProcessor;
 import com.abhishek.bagjourney_services.services.BagHistory;
 import com.abhishek.bagjourney_services.utility.BagHistoryTransformer;
+import com.abhishek.bagjourney_services.utility.BimValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,6 +31,9 @@ public class BimController {
 
     @Autowired
     BagHistory bagHistory;
+
+    @Autowired
+    BimValidator validator;
 
 
     @Operation(
@@ -75,8 +80,10 @@ public class BimController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
+
     @PostMapping("/bim")
     public BagEventResponse processBimMessage(@RequestBody BagEventRequest bagEvent){
+        validator.validate(bagEvent);
         Boolean status = processor.process(bagEvent);
         BagEventResponse response;
         if(status){
