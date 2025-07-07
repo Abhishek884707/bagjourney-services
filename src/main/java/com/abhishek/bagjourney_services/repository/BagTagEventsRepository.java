@@ -1,21 +1,14 @@
 package com.abhishek.bagjourney_services.repository;
 
 import com.abhishek.bagjourney_services.entity.BagTagEvents;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-public class BagTagEventsRepository {
+public interface BagTagEventsRepository extends MongoRepository<BagTagEvents, String> {
 
-    public static Map<String, List<BagTagEvents>> bagTagEventsList = new HashMap<>();
+    List<BagTagEvents> findByMasterBagIdOrderByEventDateAsc(String bagTagId);
 
-    public List<BagTagEvents> getBagTagEvents(String masterBagTagId){
-        List<BagTagEvents> btEvents = new ArrayList<>();
-        List<BagTagEvents> events = bagTagEventsList.get(masterBagTagId);
-        if(!events.isEmpty()){
-            return events;
-        }
-        return null;
-    }
 }

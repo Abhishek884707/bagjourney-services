@@ -1,5 +1,6 @@
 package com.abhishek.bagjourney_services.services;
 
+import com.abhishek.bagjourney_services.entity.BagItinerary;
 import com.abhishek.bagjourney_services.entity.BagTagEvents;
 
 import java.util.List;

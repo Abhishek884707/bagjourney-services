@@ -1,35 +1,27 @@
 package com.abhishek.bagjourney_services.repository;
 
 import com.abhishek.bagjourney_services.entity.BagItinerary;
-import com.abhishek.bagjourney_services.entity.BagTagEvents;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-public class ItineraryRepository {
+public interface ItineraryRepository extends MongoRepository<BagItinerary, String> {
 
-    public static Set<BagItinerary> bagItineraries = new HashSet<>();
+//    @Query("{bagTagId: ?0, departedStation: ?1}")
+    BagItinerary findByBagTagIdAndDepartedStation(String bagTagId, String departedStation);
 
-    public BagItinerary getItinerary(String bagTagId, String airportCode){
+    @Query("{bagTagId:'?0'}")
+    List<BagItinerary> findByBagTagId(String bagTagId);
 
-        for(BagItinerary bagItinerary :  bagItineraries){
-            if(bagItinerary.getBagTagId().equalsIgnoreCase(bagTagId)
-                && bagItinerary.getDepartedStation().equalsIgnoreCase(airportCode)){
-                return bagItinerary;
-            }
-        }
-    return null;
-    }
+    @Query("{bagTagId:'?0', date: '?1'}")
+    List<BagItinerary> findByBagTagAndDate(String bagTagId, String date);
 
-    public BagItinerary getItineraryWithPnr(String bagTagId, String pnr){
+    @Query("{bagTagId:'?0', date: '?1', lastName: '?2'}")
+    List<BagItinerary> findByBagTagAndDateAndLastname(String bagTagId, String date, String lastName);
 
-        for(BagItinerary bagItinerary :  bagItineraries){
-            if(bagItinerary.getBagTagId().equalsIgnoreCase(bagTagId)
-                    && bagItinerary.getPnrNumber().equalsIgnoreCase(pnr)){
-                return bagItinerary;
-            }
-        }
-        return null;
-    }
+    @Query("{bagTagId:'?0', date: '?1', lastName: '?2', pnrNumber: '?3'}")
+    List<BagItinerary> findByBagTagAndDateAndLastnameAndPnr(String bagTagId, String date, String lastName, String pnrNumber);
 }

@@ -8,4 +8,6 @@ public class Constats {
     public static final String BAG_CHECKED_IN = "Bag CheckedIn";
     public static final String BAG_DAMAGED = "Bag Damaged";
     public static final String BAG_EXPECTED = "Bag Expected";
+    public static final String BJ0001 = "BJ0001";
+    public static final String BJ0500 = "BJ0500";
 }
