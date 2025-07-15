@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setErrorCode(ErrorCodes.BJ0500.getCode());
         errorResponse.setErrorMessage(ErrorCodes.BJ0500.getMessage());
-
+        ex.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);

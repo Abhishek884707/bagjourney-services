@@ -28,8 +28,10 @@ public class BagEventRequest {
     FlightLeg inbound;
     List<FlightLeg> onwards;
     Passenger passenger;
+    String frequentFlyerId;
     Reconciliation reconciliation;
     WeightDetails bagWeightDetail;
-    String loyaltyNum;
     EventCodes eventCode;
+    String DPReferenceNumber;
+    String comments;
 }

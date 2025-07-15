@@ -17,6 +17,7 @@ public class BagHistoryTransformer {
         if(bagTagEvents != null && !bagTagEvents.isEmpty()){
             updatePassengerDetails(bagHistoryResponse, bagTagEvents);
             EventDetails eventDetails = null;
+            String frequentFlyerId = null;
             for(BagTagEvents bagTagEvent : bagTagEvents){
                 eventDetails = bagTagEvent.getEventDetails();
                 Event event = new Event();
@@ -24,24 +25,37 @@ public class BagHistoryTransformer {
                 event.setEventCode(eventDetails.getEventCode());
                 event.setEventDescription(eventDetails.getEventDescription());
                 setFlightInfo(event, eventDetails);
-                event.setFrequentFlyer(eventDetails.getFrequentFlyerId());
                 event.setPnr(eventDetails.getPnr());
                 event.setLocalDateTime(eventDetails.getEventDateTimeLocal());
                 event.setPassengerStatus(eventDetails.getPaxStatus());
                 event.setBagStatus(eventDetails.getBagTagStatus());
+                event.setBaggageSourceIndicator(eventDetails.getBaggageSourceIndicator());
+                event.setComments(eventDetails.getComments());
+                event.setReferenceNumber(eventDetails.getReferenceNumber());
+                setEventAirlineCode(event, eventDetails);
                 events.add(event);
+                if(eventDetails.getFrequentFlyerId() != null && !eventDetails.getFrequentFlyerId().isBlank()){
+                    frequentFlyerId = eventDetails.getFrequentFlyerId();
+                }
             }
             bagHistoryResponse.setSuccess(true);
-            bagHistoryResponse.setReconciliation(Reconciliation.builder()
-                    .bagStatus(eventDetails.getBagTagStatus())
-                    .passengerStatus(eventDetails.getPaxStatus())
-                    .seatNumber(eventDetails.getSeatNumber())
-                    .build());
+            bagHistoryResponse.setFrequentFlyerId(frequentFlyerId);
             bagHistoryResponse.setBagTagEvents(events);
         }else{
             bagHistoryResponse.setSuccess(false);
         }
         return bagHistoryResponse;
+    }
+
+    private static void setEventAirlineCode(Event event, EventDetails eventDetails) {
+        if(Constats.L_SOURCE_INDICATOR.equalsIgnoreCase(eventDetails.getBaggageSourceIndicator())){
+            event.setEventAirline(eventDetails.getOutbound().getAirlineCode());
+        }
+        if(Constats.T_SOURCE_INDICATOR.equalsIgnoreCase(eventDetails.getBaggageSourceIndicator())
+        || Constats.X_SOURCE_INDICATOR.equalsIgnoreCase(eventDetails.getBaggageSourceIndicator())){
+            event.setEventAirline(eventDetails.getInbound().getAirlineCode());
+        }
+
     }
 
     static void setFlightInfo(Event event, EventDetails eventDetails) {
@@ -84,11 +98,12 @@ public class BagHistoryTransformer {
     static void updatePassengerDetails(BagHistoryResponse bagHistoryResponse, List<BagTagEvents> bagTagEvents) {
         BagTagEvents bagTagEvent = findLatestBSMEvent(bagTagEvents);
         if(bagTagEvent != null){
-            StringBuilder passengerName = new StringBuilder();
-            passengerName.append(bagTagEvent.getEventDetails().getPassenger().getFirstName())
-                            .append(" ").append(bagTagEvent.getEventDetails().getPassenger().getMiddleName())
-                            .append(" ").append(bagTagEvent.getEventDetails().getPassenger().getLastName());
-            bagHistoryResponse.setPassengerName(passengerName.toString());
+            StringBuilder firstName = new StringBuilder();
+            firstName.append(bagTagEvent.getEventDetails().getPassenger().getFirstName());
+            if(bagTagEvent.getEventDetails().getPassenger().getMiddleName() != null)
+                firstName.append(" ").append(bagTagEvent.getEventDetails().getPassenger().getMiddleName());
+            bagHistoryResponse.setFirstName(firstName.toString());
+            bagHistoryResponse.setLastName(bagTagEvent.getEventDetails().getPassenger().getLastName());
             bagHistoryResponse.setBagTagNum(bagTagEvent.getEventDetails().getBagTagNumber());
             bagHistoryResponse.setWeightDetails(bagTagEvent.getEventDetails().getWeight());
         }
