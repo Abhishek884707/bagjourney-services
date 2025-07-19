@@ -70,9 +70,12 @@ public class BagEventProcessorImpl implements BagEventProcessor {
                     bagItineraries.add(itinerary);
                 }
                 //create itinerary with the source station details
-                FlightLeg flight = bagEvent.getOutbound();
+                FlightLeg flight = new FlightLeg();
                 flight.setAirportCode(bagEvent.getAirportCode());
-                itinerary = createItinerary(bagEvent.getOutbound(), bagEvent.getBagTag(),
+                flight.setAirlineCode(bagEvent.getOutbound().getAirlineCode());
+                flight.setDate(bagEvent.getOutbound().getDate());
+                flight.setFlightNumber(bagEvent.getOutbound().getFlightNumber());
+                itinerary = createItinerary(flight, bagEvent.getBagTag(),
                         bagEvent.getPassenger(), bagEvent.getPnr(), masterBagTagId);
                 if (itinerary != null){
                     bagItineraries.add(itinerary);
@@ -119,7 +122,7 @@ public class BagEventProcessorImpl implements BagEventProcessor {
         EventDetails eventDetails = new EventDetails();
         eventDetails.setAirport(bagEvent.getAirportCode());
         eventDetails.setBagTagNumber(bagEvent.getBagTag());
-        eventDetails.setFrequentFlyerId(bagEvent.getLoyaltyNum());
+        eventDetails.setFrequentFlyerId(bagEvent.getFrequentFlyerId());
         eventDetails.setInbound(bagEvent.getInbound());
         eventDetails.setOutbound(bagEvent.getOutbound());
         eventDetails.setOnwards(bagEvent.getOnwards());
@@ -131,7 +134,8 @@ public class BagEventProcessorImpl implements BagEventProcessor {
         eventDetails.setPaxStatus(bagEvent.getReconciliation().getPassengerStatus());
         eventDetails.setBagTagStatus(bagEvent.getReconciliation().getBagStatus());
         eventDetails.setSeatNumber(bagEvent.getReconciliation().getSeatNumber());
-
+        eventDetails.setComments(bagEvent.getComments());
+        eventDetails.setReferenceNumber(bagEvent.getDPReferenceNumber());
         return eventDetails;
     }
 
@@ -139,14 +143,38 @@ public class BagEventProcessorImpl implements BagEventProcessor {
 
         if(bagEvent.getEventCode() == EventCodes.C) {
             if(Constats.T_SOURCE_INDICATOR.equalsIgnoreCase(bagEvent.getBaggageSourceIndicator()))
-                eventDetails.setEventCode(Constats.BAG_EXPECTED);
+                eventDetails.setEventDescription(Constats.BAG_EXPECTED);
             else
-                eventDetails.setEventCode(Constats.BAG_CHECKED_IN);
+                eventDetails.setEventDescription(Constats.BAG_CHECKED_IN);
 
-            eventDetails.setEventDescription("Bag Checked In");
+            eventDetails.setEventCode(Constats.BAG_CHECKED_IN);
         }else if(bagEvent.getEventCode() == EventCodes.DB){
             eventDetails.setEventCode(Constats.BAG_DAMAGED);
-            eventDetails.setEventDescription("Damaged Bag Reported");
+            eventDetails.setEventDescription(Constats.BAG_DAMAGED);
+        }else if(bagEvent.getEventCode() == EventCodes.DBU){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_UPDATED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_UPDATED);
+        }else if(bagEvent.getEventCode() == EventCodes.DBDU){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_DELIVERY_UNDERWAY);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_DELIVERY_UNDERWAY);
+        }else if(bagEvent.getEventCode() == EventCodes.DBC){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_COLLECTED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_COLLECTED);
+        }else if(bagEvent.getEventCode() == EventCodes.DBDS){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_DELIVERY_SCHEDULED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_DELIVERY_SCHEDULED);
+        }else if(bagEvent.getEventCode() == EventCodes.DBDC){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_DELIVERY_CONFIRMED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_DELIVERY_CONFIRMED);
+        }else if(bagEvent.getEventCode() == EventCodes.DBR){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_RECEIVED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_RECEIVED);
+        }else if(bagEvent.getEventCode() == EventCodes.CDBC){
+            eventDetails.setEventCode(Constats.CONFIRM_DAMAGED_BAG_CLAIM);
+            eventDetails.setEventDescription(Constats.CONFIRM_DAMAGED_BAG_CLAIM);
+        }else if(bagEvent.getEventCode() == EventCodes.DBRC){
+            eventDetails.setEventCode(Constats.DAMAGED_BAG_REPORT_CLOSED);
+            eventDetails.setEventDescription(Constats.DAMAGED_BAG_REPORT_CLOSED);
         }
         return  eventDetails;
     }

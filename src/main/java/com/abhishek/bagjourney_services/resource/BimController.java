@@ -24,6 +24,7 @@ import java.util.List;
 @Tag(name = "BIM", description = "Rest endpoint to process the message and fetch the Bag History.")
 @RestController
 @RequestMapping("/v1")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BimController {
 
     @Autowired
@@ -55,7 +56,7 @@ public class BimController {
                     ))
     })
     @GetMapping("/bim")
-    public BagHistoryResponse getBimMessage(@RequestParam String bagTagNumber, @RequestParam String date,
+    public BagHistoryResponse getBagHistory(@RequestParam String bagTagNumber, @RequestParam String date,
                                 @RequestParam String lastname, @RequestParam String pnr){
         List<BagTagEvents> bagTagEventsList = bagHistory.getListOfEvents(bagTagNumber, date, lastname, pnr);
         BagHistoryResponse bagHistoryResponse = BagHistoryTransformer.transform(bagTagEventsList);
@@ -80,7 +81,6 @@ public class BimController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-
     @PostMapping("/bim")
     public BagEventResponse processBimMessage(@RequestBody BagEventRequest bagEvent){
         validator.validate(bagEvent);

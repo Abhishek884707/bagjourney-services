@@ -1,6 +1,5 @@
 package com.abhishek.bagjourney_services.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventDetails {
 
     String airport;
@@ -19,7 +17,6 @@ public class EventDetails {
     FlightLeg outbound;
     FlightLeg inbound;
     List<FlightLeg> onwards;
-    String frequentFlyerId;
     String messageType;
     String baggageSourceIndicator;
     Passenger passenger;
@@ -28,4 +25,7 @@ public class EventDetails {
     WeightDetails weight;
     String bagTagStatus;
     String seatNumber;
+    String comments;
+    String referenceNumber;
+    String frequentFlyerId;
 }
