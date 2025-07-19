@@ -12,7 +12,6 @@ com\abhishek\bagjourney_services\model\EventCodes.class
 com\abhishek\bagjourney_services\dto\BagEventResponse$BagEventResponseBuilder.class
 com\abhishek\bagjourney_services\dto\Reconciliation$ReconciliationBuilder.class
 com\abhishek\bagjourney_services\servicesImpl\BagHistoryImpl.class
-com\abhishek\bagjourney_services\entity\BagItinerary$BagItineraryBuilder.class
 com\abhishek\bagjourney_services\model\Passenger$PassengerBuilder.class
 com\abhishek\bagjourney_services\BagJourneyServicesApplication.class
 com\abhishek\bagjourney_services\dto\BagHistoryResponse.class
@@ -37,4 +36,3 @@ com\abhishek\bagjourney_services\resource\BimController.class
 com\abhishek\bagjourney_services\entity\BagTagEvents.class
 com\abhishek\bagjourney_services\repository\ItineraryRepository.class
 com\abhishek\bagjourney_services\repository\BagTagEventsRepository.class
-com\abhishek\bagjourney_services\entity\BagTagEvents$BagTagEventsBuilder.class
