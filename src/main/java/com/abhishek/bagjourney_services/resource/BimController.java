@@ -23,7 +23,7 @@ import java.util.List;
 
 @Tag(name = "BIM", description = "Rest endpoint to process the message and fetch the Bag History.")
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("bagjourney-services/v1")
 @CrossOrigin(origins = "http://localhost:5173")
 public class BimController {
 
