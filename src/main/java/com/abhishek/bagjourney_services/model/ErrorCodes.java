@@ -7,7 +7,7 @@ import java.util.Map;
 
 public enum ErrorCodes {
 
-    BJ0001("BJ0001", "Error Code for MSG BJ0001"),
+    BJ0001("BJ0001", "Query Parameter value validation"),
     BJ0500("BJ0500", "Internal Server Error");
     private static final ErrorCodes[] VALUES = values();
     String code;

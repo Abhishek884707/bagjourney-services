@@ -4,18 +4,19 @@ import com.abhishek.bagjourney_services.dto.BagEventRequest;
 import com.abhishek.bagjourney_services.dto.BagEventResponse;
 import com.abhishek.bagjourney_services.dto.BagHistoryResponse;
 import com.abhishek.bagjourney_services.dto.ErrorResponse;
-import com.abhishek.bagjourney_services.entity.BagItinerary;
 import com.abhishek.bagjourney_services.entity.BagTagEvents;
 import com.abhishek.bagjourney_services.services.BagEventProcessor;
 import com.abhishek.bagjourney_services.services.BagHistory;
 import com.abhishek.bagjourney_services.utility.BagHistoryTransformer;
-import com.abhishek.bagjourney_services.utility.BimValidator;
+import com.abhishek.bagjourney_services.validators.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +34,7 @@ public class BimController {
     @Autowired
     BagHistory bagHistory;
 
-    @Autowired
-    BimValidator validator;
+    Validator validator = new Validator();
 
 
     @Operation(
@@ -56,8 +56,12 @@ public class BimController {
                     ))
     })
     @GetMapping("/bim")
-    public BagHistoryResponse getBagHistory(@RequestParam String bagTagNumber, @RequestParam String date,
-                                @RequestParam String lastname, @RequestParam String pnr){
+    public BagHistoryResponse getBagHistory(
+            @RequestParam String bagTagNumber,
+            @RequestParam String date,
+            @RequestParam String lastname,
+            @RequestParam String pnr){
+        validator.validateGetBagHistoryParameters(bagTagNumber, date, lastname, pnr);
         List<BagTagEvents> bagTagEventsList = bagHistory.getListOfEvents(bagTagNumber, date, lastname, pnr);
         BagHistoryResponse bagHistoryResponse = BagHistoryTransformer.transform(bagTagEventsList);
         return bagHistoryResponse;
@@ -82,8 +86,7 @@ public class BimController {
                     ))
     })
     @PostMapping("/bim")
-    public BagEventResponse processBimMessage(@RequestBody BagEventRequest bagEvent){
-        validator.validate(bagEvent);
+    public BagEventResponse processBimMessage(@Valid @RequestBody BagEventRequest bagEvent){
         Boolean status = processor.process(bagEvent);
         BagEventResponse response;
         if(status){
