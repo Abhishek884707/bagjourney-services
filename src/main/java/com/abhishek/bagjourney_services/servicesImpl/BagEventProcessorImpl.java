@@ -142,10 +142,10 @@ public class BagEventProcessorImpl implements BagEventProcessor {
     private EventDetails setEventDetails(EventDetails eventDetails, BagEventRequest bagEvent){
 
         if(bagEvent.getEventCode() == EventCodes.C) {
-            if(Constats.T_SOURCE_INDICATOR.equalsIgnoreCase(bagEvent.getBaggageSourceIndicator()))
-                eventDetails.setEventDescription(Constats.BAG_EXPECTED);
-            else
+            if(Constats.L_SOURCE_INDICATOR.equalsIgnoreCase(bagEvent.getBaggageSourceIndicator()))
                 eventDetails.setEventDescription(Constats.BAG_CHECKED_IN);
+            else
+                eventDetails.setEventDescription(Constats.BAG_EXPECTED);
 
             eventDetails.setEventCode(Constats.BAG_CHECKED_IN);
         }else if(bagEvent.getEventCode() == EventCodes.DB){

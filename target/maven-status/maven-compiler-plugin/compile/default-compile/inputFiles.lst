@@ -9,8 +9,10 @@ E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\dt
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\dto\FlightInformation.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\dto\InboundFlight.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\dto\Reconciliation.java
+E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\dto\ValidationError.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\entity\BagItinerary.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\entity\BagTagEvents.java
+E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\exception\BagJourneyValidationException.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\exception\GlobalExceptionHandler.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\model\Constats.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\model\ErrorCodes.java
@@ -27,4 +29,4 @@ E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\se
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\servicesImpl\BagEventProcessorImpl.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\servicesImpl\BagHistoryImpl.java
 E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\utility\BagHistoryTransformer.java
-E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\utility\BimValidator.java
+E:\Project\bagjourney-services\src\main\java\com\abhishek\bagjourney_services\validators\Validator.java
