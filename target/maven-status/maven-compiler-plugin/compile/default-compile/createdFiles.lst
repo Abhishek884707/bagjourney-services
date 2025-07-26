@@ -22,7 +22,6 @@ com\abhishek\bagjourney_services\dto\InboundFlight$InboundFlightBuilder.class
 com\abhishek\bagjourney_services\model\FlightLeg.class
 com\abhishek\bagjourney_services\dto\Reconciliation.class
 com\abhishek\bagjourney_services\model\WeightDetails.class
-com\abhishek\bagjourney_services\utility\BimValidator.class
 com\abhishek\bagjourney_services\dto\ErrorResponse$ErrorResponseBuilder.class
 com\abhishek\bagjourney_services\model\Constats.class
 com\abhishek\bagjourney_services\dto\Flight$FlightBuilder.class

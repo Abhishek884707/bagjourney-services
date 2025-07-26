@@ -1,5 +1,6 @@
 package com.abhishek.bagjourney_services.validators;
 
+import com.abhishek.bagjourney_services.dto.BagEventRequest;
 import com.abhishek.bagjourney_services.exception.BagJourneyValidationException;
 
 import java.text.ParseException;
@@ -21,6 +22,16 @@ public class Validator {
             } catch (ParseException e) {
                 throw new BagJourneyValidationException("Date", "Date is given is wrong format accepts only(yyyy-dd-MM).");
             }
+        }
+        return isValid;
+    }
+
+    public boolean validateRequest(BagEventRequest bagEventRequest) {
+        boolean isValid = true;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-MM");
+        if(bagEventRequest.getEventCode() == null){
+            isValid = false;
+            throw new BagJourneyValidationException("Event Code", "Bag Event Code can't be blank.");
         }
         return isValid;
     }

@@ -1,4 +1,4 @@
-package com.abhishek.bagjourney_services.resource;
+package com.abhishek.bagjourney_services.controllers;
 
 import com.abhishek.bagjourney_services.dto.BagEventRequest;
 import com.abhishek.bagjourney_services.dto.BagEventResponse;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
