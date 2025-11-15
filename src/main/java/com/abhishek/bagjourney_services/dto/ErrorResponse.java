@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
+    boolean success;
     String errorCode;
     List<ValidationError> errors;
 }

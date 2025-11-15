@@ -29,6 +29,7 @@ public class BagHistoryTransformer {
                 event.setLocalDateTime(eventDetails.getEventDateTimeLocal());
                 event.setPassengerStatus(eventDetails.getPaxStatus());
                 event.setBagStatus(eventDetails.getBagTagStatus());
+                event.setSeatNumber(eventDetails.getSeatNumber());
                 event.setBaggageSourceIndicator(eventDetails.getBaggageSourceIndicator());
                 event.setComments(eventDetails.getComments());
                 event.setReferenceNumber(eventDetails.getReferenceNumber());

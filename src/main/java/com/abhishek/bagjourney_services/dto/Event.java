@@ -21,5 +21,6 @@ public class Event {
     FlightInformation flightInformation;
     String referenceNumber;
     String comments;
+    String seatNumber;
 
 }
