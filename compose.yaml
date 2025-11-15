@@ -1,0 +1,45 @@
+services:
+  app:
+    image: bjyservices:latest
+    container_name: bjy_servies
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+      - activemq
+    environment:
+      # MongoDB properties
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/BagJourney
+
+      # ActiveMQ properties (classic)
+      ACTIVEMQ_BROKER_URL: tcp://activemq:61616
+    networks:
+      - bjy-net
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - bjy-net
+
+  activemq:
+    image: apache/activemq-classic:latest
+    container_name: activemq
+    ports:
+      - "61616:61616"   # OpenWire (JMS)
+      - "8161:8161"     # Web Console
+      - "5672:5672"     # AMQP (optional)
+      - "1883:1883"     # MQTT (optional)
+      - "61613:61613"   # STOMP (optional)
+    environment:
+      ACTIVEMQ_USER: admin
+      ACTIVEMQ_PASSWORD: admin
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    networks:
+      - bjy-net
+
+networks:
+  bjy-net:

@@ -21,6 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setSuccess(false);
         errorResponse.setErrorCode(ErrorCodes.BJ0001.getCode());
         List<ValidationError> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler {
         List<ValidationError> errors = new ArrayList<>();
         ErrorCodes error = ErrorCodes.BJ0001;
         ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setSuccess(false);
         errorResponse.setErrorCode(error.getCode());
         errors.add(ValidationError.builder().errorField(ex.getField())
                     .errorMessage(ex.getMessage()).build());
@@ -56,6 +58,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception ex){
         List<ValidationError> errors = new ArrayList<>();
         ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setSuccess(false);
         errorResponse.setErrorCode(Constats.BJ0500);
         errors.add(ValidationError.builder()
                 .errorMessage(ex.getMessage()).build());
